@@ -8,7 +8,7 @@
   </header>
   <ul>
       <TodoItem 
-          v-for="item in todos" 
+          v-for="item in toDos" 
           v-bind:key="item.id"
           v-bind:todoData="item"
           v-on:checkTodo="checkTodo(item)"
@@ -22,6 +22,9 @@
       v-on:keyup.enter="addTodo"
   >
   <button @click="addTodo">Lägg till todo</button>
+  <label for="">{{$store.getters.showHide}} completed</label>
+  <input type="checkbox" @change="$store.commit('showDoneDo')">
+
   
 </div>
 
@@ -33,30 +36,27 @@ import TodoItem from './TodoItem'
 export default {
     components: {TodoItem},
     data(){return{
-        todos: [],
         newContent: '',
     }},
-
     computed: {
         todosLeft(){
-            return this.todos.filter(todo => !todo.done).length
+            return this.$store.getters.toDoLeft
         },
+        toDos() {
+          return this.$store.getters.toDo
+        }
     },
 
     methods:{
         addTodo(){
-            this.todos.push({
-                id: Date.now(),
-                content: this.newContent,
-                done: false
-            })
-            this.newContent = ''
+          this.$store.commit('addTodo', this.newContent)
+          this.newContent = ''
         },
         checkTodo(todo){
             todo.done = !todo.done
         },
-        removeTodo(todo){
-            this.todos = this.todos.filter(element => element.id != todo.id)
+        removeTodo(todo) {
+            this.$store.commit('removeTodo', todo)
             
             // const index = this.todos.indexOf(todo)
             // this.todos.splice(index, 1)
